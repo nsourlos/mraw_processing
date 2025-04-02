@@ -38,8 +38,6 @@ def determine_illumination_type(folder_path):
 
 def main():
     # Define paths
-    # input_dir = "data"  # Root directory for data
-    # output_dir = "output"  # Where to save processed results
     input_dir = "../data"  # Root directory for data (one folder behind)
     output_dir = "../output"  # Where to save processed results (one folder behind)
     
@@ -58,6 +56,9 @@ def main():
         print(f"No subfolders found in {input_dir}")
         sys.exit(1)
     
+    # Keep track of h5 files created during processing
+    created_h5_files = set()
+    
     for folder in subfolders:
         # Determine illumination type from folder name
         illumination_type = determine_illumination_type(folder)
@@ -67,6 +68,9 @@ def main():
         cihx_files = glob.glob(os.path.join(folder, "**", "*.cihx"), recursive=True)
         h5_files = glob.glob(os.path.join(folder, "**", "*.h5"), recursive=True)
         npy_files = glob.glob(os.path.join(folder, "**", "*.npy"), recursive=True)
+        
+        # Filter out h5 files that were created during processing
+        h5_files = [f for f in h5_files if f not in created_h5_files]
         
         all_files = cihx_files + h5_files + npy_files
         
@@ -78,14 +82,15 @@ def main():
         print("\n")
         
         for input_file in all_files:
+
             folder_name = os.path.basename(folder)
-            print('Folder name', folder_name)
+            print('Folder name:', folder_name)
             file_name = os.path.basename(input_file).split('.')[0]
-            print("file name", file_name)
+            print("File name:", file_name)
             
-            # Step 1: Convert MRAW to HDF5 if needed
+            # Step 2: Convert MRAW to HDF5 if needed
             if input_file.endswith('.cihx'):
-                print(f"Step 1: Converting {input_file} to HDF5")
+                print(f"Step 2: Converting {input_file} to HDF5")
                 # hdf5_file = os.path.join(output_dir, f"{folder_name}_{file_name}.h5")
 
                 # Save h5 file in the same location as the input file
@@ -93,23 +98,27 @@ def main():
                 images, _ = load_mraw_video(input_file)
                 if images is not None:
                     save_to_hdf5(images, hdf5_file, compression_level=1)
+                    # Add the newly created h5 file to our tracking set
+                    created_h5_files.add(hdf5_file)
+                    print("Files to ignore:",created_h5_files)
                     # Use the HDF5 file for further processing
                     input_file = hdf5_file
-                    # Free memory
-                    # del images
                 else:
                     print(f"Error loading MRAW file: {input_file}")
                     continue
             
             # Step 2: Load the file for processing
-            elif input_file.endswith('.h5'):
+            elif input_file.endswith('.h5') and input_file not in created_h5_files:
                 print(f"Step 2: Loading from file {input_file}")
                 images = load_from_hdf5(input_file)
             elif input_file.endswith('.npy'):
                 print(f"Step 2: Loading from file {input_file}")
                 images = load_from_npy(input_file)
             else:
-                print(f"Unsupported file type: {input_file}")
+                if input_file in created_h5_files:
+                    print(f"Skipping file {input_file} (already processed)")
+                else:
+                    print(f"Unsupported file type: {input_file}")
                 continue
                 
             if images is None:
@@ -143,13 +152,13 @@ def main():
                 print("Processing with PyTorch methods...")
                 # use_torch=True
                 
-                # Create visualization subdirectory for torch processing
-                vis_dir = os.path.join(pytorch_dir, "visualizations")
-                os.makedirs(vis_dir, exist_ok=True)
+                # # Create visualization subdirectory for torch processing
+                # vis_dir = os.path.join(pytorch_dir, "visualizations")
+                # os.makedirs(vis_dir, exist_ok=True)
                 
-                # Create kernels as in the notebook
-                gaussian_kernel = create_gaussian_filter(1.4, 2)  # First Gaussian kernel
-                kernels = [gaussian_kernel, "Edge Detect", "Gaussian"]  # Sequence from notebook
+                # # Create kernels as in the notebook
+                # gaussian_kernel = create_gaussian_filter(1.4, 2)  # First Gaussian kernel
+                # kernels = [gaussian_kernel, "Edge Detect", "Gaussian"]  # Sequence from notebook
                 
                 # # Preprocess images before applying kernels
                 # preprocessed_images = []
@@ -239,7 +248,7 @@ def main():
                 #     torch_kernels=["Edge Detect", "Gaussian", "Sharpen"]
                 # )
             
-            # Free memory
+        #     # Free memory
             del images
             print("\n")
             
@@ -291,21 +300,20 @@ def main():
                     threshold_img=10 if illumination_type == 'back' else 100,
                     illumination_type=illumination_type
                 )
-                # print("Wave roller coordinates:",wave_roller_coords)
                 print("Starting frame:", starting_frame, "End frame:", end_frame)
             else:
                 print(f"Warning: Frames directory not found: {frames_dir}")
     
 
-        # # Delete frames_dir and all debug_frame_*.jpg images inside analysis_dir
-        # if os.path.exists(frames_dir):
-        #     print(f"\nDeleting frames directory: {frames_dir}")
-        #     for root, dirs, files in os.walk(frames_dir, topdown=False):
-        #         for name in files:
-        #             os.remove(os.path.join(root, name))
-        #         for name in dirs:
-        #             os.rmdir(os.path.join(root, name))
-        #     os.rmdir(frames_dir)
+        # Delete frames_dir and all debug_frame_*.jpg images inside analysis_dir
+        if os.path.exists(frames_dir):
+            print(f"\nDeleting frames directory: {frames_dir}")
+            for root, dirs, files in os.walk(frames_dir, topdown=False):
+                for name in files:
+                    os.remove(os.path.join(root, name))
+                for name in dirs:
+                    os.rmdir(os.path.join(root, name))
+            os.rmdir(frames_dir)
         
         if os.path.exists(analysis_dir):
             print(f"Deleting debug_frame_*.jpg images in analysis directory: {analysis_dir}")
