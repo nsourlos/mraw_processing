@@ -141,7 +141,7 @@ def main():
                 # PyTorch processing
                 pytorch_dir = os.path.join(process_dir, "pytorch")
                 print("Processing with PyTorch methods...")
-                use_torch=True
+                # use_torch=True
                 
                 # Create visualization subdirectory for torch processing
                 vis_dir = os.path.join(pytorch_dir, "visualizations")
