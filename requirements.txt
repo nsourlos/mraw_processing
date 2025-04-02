@@ -1,0 +1,11 @@
+pyMRAW==0.32
+opencv-python==4.10.0.84
+h5py==3.12.1
+scikit-image==0.25.1
+matplotlib==3.9.2
+tqdm==4.67.1
+pillow==10.4.0
+python-dotenv==1.0.1
+torch==2.2.1
+torchvision==0.17.1
+tensorflow==2.15.0
