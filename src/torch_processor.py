@@ -278,7 +278,7 @@ class torch_processor():
 
             # Save and close
             # if save_image:
-            plt.savefig(os.path.join(output_path, "frames") + f"/frame_{iteration}.jpg")
+            plt.savefig(os.path.join(output_path, "frames") + f"/frame_{iteration:05d}.jpg")
             plt.close(fig)
 
     def process_image_with_kernels(self, used_kernels = ["Edge Detect"], images = "../data/incident_illumination", image_range = [271, 272], threshold_value=0.540, inverse_image_alphas=False, alpha_bounds=(100,553), morph_transforms=[]) -> tuple:

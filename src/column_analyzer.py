@@ -336,10 +336,12 @@ class column_analyzer():
         # Find first frame with area above threshold
         for frame_num in tqdm(range(starting_frame, n_frames), desc="Finding wave roller start"):
             frame_path = os.path.join(frames_dir, f"frame_{frame_num:05d}.jpg")
-            frame = cv2.imread(frame_path, cv2.IMREAD_GRAYSCALE)
-            if frame is None:
+            frame_file = np.load(frame_path) 
+            frame = (frame_file.f.arr_0) * 255 # This needs to have values 0-255
+            # frame = cv2.imread(frame_path, cv2.IMREAD_GRAYSCALE) 
+            if frame is None: 
                 continue
-                
+
             area = self.detect_roller_area(frame, threshold_img, illumination_type)
             if area > threshold_area:
                 starting_frame = frame_num
