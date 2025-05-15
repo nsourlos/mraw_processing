@@ -158,7 +158,7 @@ def main():
             logging.info(f"File name: {file_name}")
             
             # Step 2: Convert MRAW to HDF5 if needed # This seems to be always done. A check is in order.
-            if True:
+            if False:
                 if input_file.endswith('.cihx'):
                     if (input_file[:-5] + ".h5") in all_files:
                         print(f"h5 file: {input_file[:-5]} already exists")
@@ -214,100 +214,35 @@ def main():
             process_dir = os.path.join(output_dir, f"{folder_name}_{file_name}")
             traditional_dir = os.path.join(process_dir, "traditional")
             pytorch_dir = os.path.join(process_dir, "pytorch")
-            first_frame = 5500
-            last_frame = 6501
-            images = None
+            os.makedirs(traditional_dir, exist_ok=True)
+            os.makedirs(pytorch_dir, exist_ok=True)
+            first_frame = 5676
+            last_frame = 7308
+            # images = None
             
             if illumination_type == 'back':
                 # Process with back illumination methods
-                print(colored("Step 3: Processing with back illumination...", 'green'))
-                logging.info("Step 3: Processing with back illumination...")
-                use_torch=False
-                
-                # # Traditional processing
-                print("Processing with traditional methods...")
-                logging.info("Processing with traditional methods...")
-                im_proc.process_back_illumination(
-                    images,
-                    output_dir=traditional_dir,
-                    background_frame_idx=0,
-                    start_idx=0,
-                    end_idx=len(images),
+                if False:
+                    print(colored("Step 3: Processing with back illumination...", 'green'))
+                    logging.info("Step 3: Processing with back illumination...")
                     use_torch=False
-                )
+                    
+                    # # Traditional processing
+                    print("Processing with traditional methods...")
+                    logging.info("Processing with traditional methods...")
+                    im_proc.process_back_illumination(
+                        images,
+                        output_dir=traditional_dir,
+                        background_frame_idx=0,
+                        start_idx=0,
+                        end_idx=len(images),
+                        use_torch=False
+                    )
                 
-                # PyTorch processing
-                # print("Processing with PyTorch methods...")
-                # logging.info("Processing with PyTorch methods...")
-                # use_torch=True
-
-                # # Create visualization subdirectory for torch processing
-                # vis_dir = os.path.join(pytorch_dir, "visualizations")
-                # os.makedirs(vis_dir, exist_ok=True)
-                
-                # print("\n")
-                # logging.info("")
-                # print(colored("Creating and storing image contours...", 'green'), illumination_type)
-                # logging.info(f"Creating and storing image contours... {illumination_type}")
-                # images = t_processor.process_image_with_kernels(
-                #     used_kernels=[t_processor.create_gaussian_filter(1.4,2), "Edge Detect"],
-                #     images=os.path.join(traditional_dir, "frames"), # needs to work with set of images
-                #     image_range = [first_frame, last_frame],
-                #     threshold_value=0.4,
-                #     inverse_image_alphas=False,
-                #     alpha_bounds=(200, 750),
-                #     morph_transforms=[(cv2.MORPH_CLOSE, np.ones((3,3),np.uint8)), (cv2.MORPH_OPEN, np.ones((3,3),np.uint8))]
-                # )
-                # images = t_processor.top_of_wave(images=images)
-                # t_processor.save_visualization(
-                #     image_list=images,
-                #     image_names=["Raw Image", "Modified contour image", "Combined"],
-                #     output_path=pytorch_dir,
-                #     verbose=False
-
-                # )
-                # print("Starting frame:", first_frame, "End frame:", last_frame)
-                # logging.info(f"Starting frame: {first_frame}, End frame: {last_frame}")
-
-                # # Create kernels as in the notebook
-                # gaussian_kernel = create_gaussian_filter(1.4, 2)  # First Gaussian kernel
-                # kernels = [gaussian_kernel, "Edge Detect", "Gaussian"]  # Sequence from notebook
-                
-                # # Preprocess images before applying kernels
-                # preprocessed_images = []
-                # for img in images:
-                #     if img.max() > 1.0:
-                #         img = img / 255.0
-                #     preprocessed_images.append(img)
-                # preprocessed_images = np.array(preprocessed_images)
-                
-                # # Process images with torch
-                # processed_images, contours, wave_positions = apply_kernels_batch(
-                #     images,
-                #     # preprocessed_images,
-                #     kernels,
-                #     threshold_value=0.4,
-                #     alpha_bounds=(200, 750),
-                #     output_dir=vis_dir,
-                #     verbose=True
-                # )
-                
-                # # Save results using process_back_illumination for consistent directory structure
-                # process_back_illumination(
-                #     images,
-                #     output_dir=pytorch_dir,
-                #     background_frame_idx=0,
-                #     start_idx=15000, ######CHANGE THAT TO 0
-                #     end_idx=len(images),
-                #     use_torch=True,
-                #     torch_kernels=kernels,
-                #     vis_dir=vis_dir,  # Pass visualization directory
-                #     verbose=True  # Enable verbose output for detailed visualization
-                # )
                 
             else:  # incident illumination
                 # Process with incident illumination methods
-                if True:
+                if False:
                     print(colored("Processing with incident illumination...", 'green'))
                     logging.info("Processing with incident illumination...")
                     
@@ -320,49 +255,7 @@ def main():
                         output_dir=traditional_dir,
                         background_frame_idx=0,
                     )
-                # # PyTorch processing
-                # pytorch_dir = os.path.join(process_dir, "pytorch")
-                # use_torch=True
-                # print("Processing with PyTorch methods...")
-                # logging.info("Processing with PyTorch methods...")                
-
-                # # Create visualization subdirectory for torch processing
-                # vis_dir = os.path.join(pytorch_dir, "visualizations")
-                # os.makedirs(vis_dir, exist_ok=True)
                 
-                # # Create kernels as in the notebook
-                # gaussian_kernel = create_gaussian_filter(1.4, 2)  # First Gaussian kernel
-                # kernels = [gaussian_kernel, "Edge Detect", "Gaussian"]  # Sequence from notebook
-                
-                # # Preprocess images before applying kernels - NOT ACTIVATE
-                # preprocessed_images = []
-                # for img in images:
-                #     if img.max() > 1.0:
-                #         img = img / 255.0
-                #     preprocessed_images.append(img)
-                # preprocessed_images = np.array(preprocessed_images)
-                # print("Images obtained")
-                # logging.info("Images obtained")
-                
-                # # Process images with torch - ONLY THIS ACTIVATE
-                # processed_images, contours, wave_positions = apply_kernels_batch(
-                #     images,
-                #     # preprocessed_images,
-                #     kernels,
-                #     threshold_value=0.4,
-                #     alpha_bounds=(200, 750),
-                #     output_dir=vis_dir,
-                #     verbose=True
-                # )
-
-                # process_incident_illumination(
-                #     images,
-                #     output_dir=pytorch_dir,
-                #     background_frame_idx=0,
-                #     # process_frame_idx=None,
-                #     use_torch=True,
-                #     torch_kernels=["Edge Detect", "Gaussian", "Sharpen"]
-                # )
             
             # Free memory
             # del images
@@ -380,25 +273,38 @@ def main():
                 images=str(os.path.join(traditional_dir, "frames")), # needs to work with set of images
                 # images="output/incident_illumination_Side_View_Video_128mm_MRAW_015_C001H001S0001/traditional/combined/",
                 image_range = range(first_frame, last_frame),
-                threshold_value=0.4,
+                threshold_value=0.50,
                 inverse_image_alphas=False,
                 alpha_bounds=(200, 750),
                 morph_transforms=[(cv2.MORPH_CLOSE, np.ones((3,3),np.uint8)), (cv2.MORPH_OPEN, np.ones((3,3),np.uint8))]
+                # morph_transforms=[]
+            )
+
+            t_processor.save_visualization(
+                image_list=images_processed,
+                # image_titles=["Raw Image", "Gaussian filter", "Edge detect", "Combined"],
+                image_titles=["Raw Image", "Gaussian filter", "Edge detect", "Morph Close", "Morph Open", "Combined"],
+                output_path=pytorch_dir,
+                verbose=True
             )
             print("Images Processed. Finding top-of-wave...\n")
             t1 = time.time()
-            images_processed = t_processor.top_of_wave(images=images_processed)
+            images_processed, right_most_coordinates = t_processor.top_of_wave(images=images_processed, adjecency=int(images_processed[0].shape[1]))
             print(f"Found top of wave in {time.time() - t1} seconds. Saving images as npz...")
+            pytorch_dir_top_of_wave = os.path.join(pytorch_dir, "top_of_wave") # I want this changed from contours to matrix or 2d tensor
+            if pytorch_dir_top_of_wave:
+                os.makedirs(pytorch_dir_top_of_wave, exist_ok=True)
             t1 = time.time()
             for frame_num, im_proc in enumerate(images_processed):
-                np.savez_compressed(f"output/incident_illumination_Side_View_Video_128mm_MRAW_015_C001H001S0001/pytorch/contours/frame_{(frame_num+first_frame):05d}.npz", im_proc[1]) # Ideally this should work
+                np.savez_compressed(pytorch_dir_top_of_wave + f"/frame_{(frame_num+first_frame):05d}.npz", im_proc[1]) # Ideally this should work
             print(f"Saving complete. Saving files took {time.time() - t1} seconds.")
-            t_processor.save_visualization(
-                image_list=images_processed,
-                image_titles=["Raw Image", "Modified contour image", "Combined"],
-                output_path=pytorch_dir,
-                verbose=False
-            )
+            # t_processor.save_visualization(
+            #     image_list=images_processed,
+            #     image_titles=["Raw Image", "Modified contour image", "Combined"],
+            #     output_path=pytorch_dir,
+            #     verbose=False
+            # )
+            t_processor.npz_to_video("output/test_roller_tracking.mp4",pytorch_dir_top_of_wave, os.path.join(traditional_dir,"frames"), first_frame, last_frame, right_most_coordinates)
             print("Starting frame:", first_frame, "End frame:", last_frame)
             logging.info(f"Starting frame: {first_frame}, End frame: {last_frame}")
             # del images_processed
@@ -406,53 +312,58 @@ def main():
             # Step 4: Analyze wave heights
             # Use frames from PyTorch processing when torch is enabled
             # frames_dir = os.path.join(pytorch_dir if use_torch else traditional_dir, "frames")
-            frames_dir_list = [os.path.join(pytorch_dir, "frames"), os.path.join(traditional_dir,"frames")]
+            # frames_dir_list = [os.path.join(pytorch_dir, "top_of_wave"), os.path.join(traditional_dir,"frames")]
+            frames_dir_list = [os.path.join(traditional_dir,"frames"), pytorch_dir_top_of_wave]
+            # frames_dir_list = [pytorch_dir_top_of_wave]
             analysis_dir = os.path.join(process_dir, "analysis")
             os.makedirs(analysis_dir, exist_ok=True)
             output_path = os.path.join(traditional_dir,"combined")
-            
-            # if os.path.exists(os.path.join(traditional_dir, "frames")):
-            #     print(colored("Step 4: Analyzing wave heights...", 'green'))
-            #     logging.info("Step 4: Analyzing wave heights...")
-            #     bin_arrays, column_positions, frame_count= col_analyzer.analyze_columns(
-            #         os.path.join(traditional_dir,"frames"), 
-            #         num_columns=5, 
-            #         output_dir=output_path, 
-            #         max_frames=None,
-            #         skip_top_pixels=190,
-            #         middle_wave_height=500,
-            #         threshold_level=10 if illumination_type == 'back' else 30,
-            #         column_width=1,
-            #         bin_start=100, 
-            #         bin_end=200
-            #     )
 
-            #     print(colored("Creating animation...", 'green'))
-            #     logging.info("Creating animation...")
-            #     col_analyzer.create_animation(
-            #         os.path.join(traditional_dir,"frames"), 
-            #         output_path, 
-            #         bin_arrays, 
-            #         column_positions, 
-            #         frame_count,
-            #         num_columns=5, 
-            #         fps=60, #was 10 but resulting video was 34 mins, 300 strange artifacts
-            #         max_frames=None,
-            #         column_width=1,
-            #     )
+            if False:
+                if os.path.exists(os.path.join(traditional_dir, "frames")):
+                    print(colored("Step 4: Analyzing wave heights...", 'green'))
+                    logging.info("Step 4: Analyzing wave heights...")
+                    bin_arrays, column_positions, frame_count= col_analyzer.analyze_columns(
+                        os.path.join(traditional_dir,"frames"), 
+                        num_columns=5, 
+                        output_dir=output_path, 
+                        max_frames=None,
+                        skip_top_pixels=190,
+                        middle_wave_height=500,
+                        threshold_level=10 if illumination_type == 'back' else 30,
+                        column_width=1,
+                        bin_start=100, 
+                        bin_end=200
+                    )
 
-            #     del bin_arrays
+                    print(colored("Creating animation...", 'green'))
+                    logging.info("Creating animation...")
+                    col_analyzer.create_animation(
+                        os.path.join(traditional_dir,"frames"), 
+                        output_path, 
+                        bin_arrays, 
+                        column_positions, 
+                        frame_count,
+                        num_columns=5, 
+                        fps=60, #was 10 but resulting video was 34 mins, 300 strange artifacts
+                        max_frames=None,
+                        column_width=1,
+                    )
 
+                    del bin_arrays
+            # backup_starting_frames = 0
+            # backup_ending_frames = 25000
             for it, frames_dir in enumerate(frames_dir_list):
                 output_path = os.path.join(analysis_dir, str(it))
                 os.makedirs(output_path, exist_ok=True)
                 if os.path.exists(frames_dir):
-                    
+                    # Wave tracking implementation is incompatible with my implementation. Either I change a lot of it, or create a different Roller_toe func
                     # Optional: Wave roller tracking
                     print("\n")
                     logging.info("")
                     print(colored("Step 5: Obtaining wave roller...", 'green'), illumination_type)
                     logging.info(f"Step 5: Obtaining wave roller... {illumination_type}")
+                    # This will be seperated into two: Nikos' contours and Josip's contours
                     wave_roller_coords, starting_frame, end_frame = col_analyzer.get_wave_roller(
                         frames_dir, 
                         output_path, 
@@ -465,13 +376,17 @@ def main():
                     print("Starting frame:", starting_frame, "End frame:", end_frame)
                     logging.info(f"Starting frame: {starting_frame}, End frame: {end_frame}")
 
-                    # Optional: Wave mean
-                    if len(wave_roller_coords) > 0:
-                        print("\n")
-                        logging.info("")
-                        print(colored("Step 6: Creating wave mean...", 'green'), illumination_type)
-                        logging.info(f"Step 6: Creating wave mean... {illumination_type}")
-                        t_processor.apply_avgpooling(image_range=[starting_frame, end_frame],images=frames_dir, kernel_size=20, stride=20, save_location=output_path, toe_positions=wave_roller_coords)
+                    # Optional: Wave mean   
+                    print("\n")
+                    logging.info("")
+                    print(colored("Step 6: Creating wave mean...", 'green'), illumination_type)
+                    logging.info(f"Step 6: Creating wave mean... {illumination_type}")
+                    # 
+                    coordinates = wave_roller_coords if "traditional" in frames_dir else right_most_coordinates # interesting that both techniques create 1632 frames
+                    starting_frame = starting_frame if "traditional" in frames_dir else  first_frame # should the XY coords be fixed?
+                    end_frame = end_frame if "traditional" in frames_dir else last_frame
+                    if len(coordinates) > 0:
+                        t_processor.apply_avgpooling(image_range=range(starting_frame, end_frame), images=os.path.join(traditional_dir,"frames"), kernel_size=20, stride=20, save_location=output_path, toe_positions=coordinates)
                         print("Starting frame:", starting_frame, "End frame:", end_frame)
                         logging.info(f"Starting frame: {starting_frame}, End frame: {end_frame}")
                     else:
@@ -480,28 +395,31 @@ def main():
                         print(colored("Wave roller not found.", 'green'), illumination_type)
                         logging.error(f"Wave roller not found. {illumination_type}")
 
+                    first_frame = starting_frame
+                    last_frame = end_frame
+
 
                 else:
                     print(f"Warning: Frames directory not found: {frames_dir}")
                     logging.warning(f"Warning: Frames directory not found: {frames_dir}")
         
         
-                # Calculate and print file processing time
-                file_end_time = time.time()
-                file_duration = file_end_time - file_start_time
-                print(f"\n{colored(f'File processing time: {file_duration:.2f} seconds', 'red')}")
-                logging.info(f"\nFile processing time: {file_duration:.2f} seconds")
+            # Calculate and print file processing time
+            file_end_time = time.time()
+            file_duration = file_end_time - file_start_time
+            print(f"\n{colored(f'File processing time: {file_duration:.2f} seconds', 'red')}")
+            logging.info(f"\nFile processing time: {file_duration:.2f} seconds")
 
-                # Delete frames_dir and all debug_frame_*.jpg images inside analysis_dir
-                if os.path.exists(frames_dir):
-                    print(f"\nDeleting frames directory: {frames_dir}")
-                    logging.info(f"\nDeleting frames directory: {frames_dir}")
-                    for root, dirs, files in os.walk(frames_dir, topdown=False):
-                        for name in files:
-                            os.remove(os.path.join(root, name))
-                        for name in dirs:
-                            os.rmdir(os.path.join(root, name))
-                    os.rmdir(frames_dir)
+            # Delete frames_dir and all debug_frame_*.jpg images inside analysis_dir
+            if os.path.exists(frames_dir):
+                print(f"\nDeleting frames directory: {frames_dir}")
+                logging.info(f"\nDeleting frames directory: {frames_dir}")
+                for root, dirs, files in os.walk(frames_dir, topdown=False):
+                    for name in files:
+                        os.remove(os.path.join(root, name))
+                    for name in dirs:
+                        os.rmdir(os.path.join(root, name))
+                os.rmdir(frames_dir)
                 
             if os.path.exists(analysis_dir):
                 print(f"Deleting debug_frame_*.jpg images in analysis directory: {analysis_dir}")
@@ -529,4 +447,4 @@ def main():
     # Processing info
 
 if __name__ == "__main__":
-    main() 
+    main()
