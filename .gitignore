@@ -1,1 +1,8 @@
-.DS_Store
+**/.DS_Store
+combined/
+.vscode/
+output/
+__pycache__/
+*.cihx
+*.h5
+*.mraw
